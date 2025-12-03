@@ -1,7 +1,5 @@
-// Survey: 5 animals × 10 features each
-// For each animal: 1 intro page + 1 page with 10 feature questions
-
 // ---------- Firebase init (compat style) ----------
+// If you already initialize Firebase elsewhere, keep ONE copy of this config.
 
 const firebaseConfig = {
   apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
@@ -45,6 +43,7 @@ const jsPsych = initJsPsych({
       const animal = trial.animal;
       const featureIndices = trial.feature_indices;  // [38, 79, ...]
       const respObj = trial.response;                // { feature_38: 2, ... } (0–4)
+      // question_order is there too, but we don't need it since we know feature_indices
 
       featureIndices.forEach(featureIdx => {
         const key = `feature_${featureIdx}`;
@@ -81,50 +80,18 @@ const jsPsych = initJsPsych({
 
 // ---------- Demographics page ----------
 
-// Build age options 1–99 as HTML <option> tags
-const ageOptionsHtml = Array.from({ length: 99 }, (_, i) => {
-  const age = i + 1;
-  return `<option value="${age}">${age}</option>`;
-}).join("");
-
 const demographics = {
-  type: jsPsychSurveyHtmlForm,
+  type: jsPsychSurveyText,
   preamble: `
     <h2>About You</h2>
     <p>Please answer a few questions before the survey begins.</p>
   `,
-  html: `
-    <p>
-      <label>
-        First name:
-        <input name="first_name" type="text" maxlength="30" required>
-      </label>
-    </p>
-
-    <p>
-      <label>
-        Last name:
-        <input name="last_name" type="text" maxlength="30" required>
-      </label>
-    </p>
-
-    <p>
-      <label>
-        Age:
-        <select name="age" required>
-          <option value="" disabled selected>Select age</option>
-          ${ageOptionsHtml}
-        </select>
-      </label>
-    </p>
-
-    <p>Gender:</p>
-    <p>
-      <label><input type="radio" name="gender" value="Male" required> Male</label><br>
-      <label><input type="radio" name="gender" value="Female"> Female</label><br>
-      <label><input type="radio" name="gender" value="Other"> Other</label>
-    </p>
-  `,
+  questions: [
+    { prompt: "First name:", name: "first_name", required: true },
+    { prompt: "Last name:", name: "last_name", required: true },
+    { prompt: "Age:", name: "age", required: true },
+    { prompt: "Gender (optional):", name: "gender", required: false }
+  ],
   data: {
     screen_type: "demographics"
   }
