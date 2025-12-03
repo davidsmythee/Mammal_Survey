@@ -1,7 +1,6 @@
-// Survey: 5 animals × 10 features each
-// For each animal: 1 intro page + 1 page with 10 feature questions
-
 // ---------- Firebase init (compat style) ----------
+// If you already initialize Firebase elsewhere, keep ONE copy of this config.
+
 const firebaseConfig = {
   apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
   authDomain: "mammalsurvey-69cfa.firebaseapp.com",
@@ -11,20 +10,65 @@ const firebaseConfig = {
   appId: "1:918927677850:web:684a74b563f19baed80223"
 };
 
-// firebase and firebase.firestore come from the compat scripts in index.html
-firebase.initializeApp(firebaseConfig);
+// `firebase` comes from the compat scripts in index.html
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
-// ---------- jsPsych init ----------
+// ---------- jsPsych init with custom saving ----------
+
 const jsPsych = initJsPsych({
   display_element: 'jspsych-target',
   on_finish: function() {
-    const data = jsPsych.data.get().json();
+    // 1. Get all jsPsych data as an object (not a big JSON string)
+    const allData = jsPsych.data.get();
 
-    // Save one document per participant into "responses" collection
+    // 2. Extract demographics
+    const demoTrial = allData.filter({ screen_type: 'demographics' }).values()[0];
+    const demoResp = demoTrial ? demoTrial.response : {};
+
+    const firstName = demoResp.first_name || "";
+    const lastName  = demoResp.last_name || "";
+    const age       = demoResp.age || "";
+    const gender    = demoResp.gender || "";
+
+    // 3. Extract feature-block trials (each is one animal with 10 features)
+    const featureTrials = allData.filter({ screen_type: 'feature_block' }).values();
+
+    // We will build an array of { animal, feature_index, feature_name, score }
+    const simplifiedResponses = [];
+
+    featureTrials.forEach(trial => {
+      const animal = trial.animal;
+      const featureIndices = trial.feature_indices;  // [38, 79, ...]
+      const respObj = trial.response;                // { feature_38: 2, ... } (0–4)
+      // question_order is there too, but we don't need it since we know feature_indices
+
+      featureIndices.forEach(featureIdx => {
+        const key = `feature_${featureIdx}`;
+        if (respObj.hasOwnProperty(key)) {
+          const rawScore = respObj[key]; // 0–4 from jsPsych
+          const score = rawScore + 1;    // convert to 1–5
+
+          simplifiedResponses.push({
+            animal: animal,
+            feature_index: featureIdx,
+            feature_name: featureNames[featureIdx],
+            score: score
+          });
+        }
+      });
+    });
+
+    // 4. Save ONE document per participant to Firestore
     db.collection("responses").add({
       timestamp: new Date().toISOString(),
-      data: data
+      first_name: firstName,
+      last_name: lastName,
+      age: age,
+      gender: gender,
+      responses: simplifiedResponses
     }).then(() => {
       alert("Thank you! Your responses were saved.");
     }).catch((error) => {
@@ -34,7 +78,27 @@ const jsPsych = initJsPsych({
   }
 });
 
-// 1. Intro screen (experiment-level)
+// ---------- Demographics page ----------
+
+const demographics = {
+  type: jsPsychSurveyText,
+  preamble: `
+    <h2>About You</h2>
+    <p>Please answer a few questions before the survey begins.</p>
+  `,
+  questions: [
+    { prompt: "First name:", name: "first_name", required: true },
+    { prompt: "Last name:", name: "last_name", required: true },
+    { prompt: "Age:", name: "age", required: true },
+    { prompt: "Gender (optional):", name: "gender", required: false }
+  ],
+  data: {
+    screen_type: "demographics"
+  }
+};
+
+// ---------- Intro screen (experiment-level) ----------
+
 const welcome = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
@@ -69,16 +133,19 @@ console.log("Sampled animal indices:", sampledAnimals);
 
 // Build timeline
 let timeline = [];
+
+// 1) Demographics first
+timeline.push(demographics);
+
+// 2) Then welcome / instructions
 timeline.push(welcome);
 
-// For each sampled animal:
-//   1) an intro page about that animal
-//   2) ONE survey-likert page with 10 feature questions
+// 3) Then 5 × (intro + feature page)
 sampledAnimals.forEach(animalIdx => {
   const animalName = animalNames[animalIdx];
   const row = animalFeatures[animalIdx];
 
-  // --- 1) Intro page for this animal ---
+  // --- 3a) Intro page for this animal ---
   const animalIntro = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
@@ -97,7 +164,7 @@ sampledAnimals.forEach(animalIdx => {
 
   timeline.push(animalIntro);
 
-  // --- 2) Select 10 present features for this animal ---
+  // --- 3b) Select 10 present features for this animal ---
   let presentFeatureIndices = [];
   for (let j = 0; j < featureNames.length; j++) {
     if (row[j]) {
