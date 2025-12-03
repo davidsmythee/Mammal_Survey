@@ -2,8 +2,6 @@
 // For each animal: 1 intro page + 1 page with 10 feature questions
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
@@ -14,9 +12,8 @@ const firebaseConfig = {
   appId: "1:918927677850:web:684a74b563f19baed80223"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 
 
