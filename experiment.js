@@ -1,15 +1,39 @@
 // Survey: 5 animals × 10 features each
 // For each animal: 1 intro page + 1 page with 10 feature questions
 
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
+  authDomain: "mammalsurvey-69cfa.firebaseapp.com",
+  projectId: "mammalsurvey-69cfa",
+  storageBucket: "mammalsurvey-69cfa.firebasestorage.app",
+  messagingSenderId: "918927677850",
+  appId: "1:918927677850:web:684a74b563f19baed80223"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+
+
 const jsPsych = initJsPsych({
   display_element: 'jspsych-target',
-  on_finish: function() {
-    // Do NOT display the data to the participant.
-    // You can grab it from the console or via your hosting platform.
-    // Example for debugging (commented out):
-    // console.log(jsPsych.data.get().csv());
+  on_finish: async function() {
+    const data = jsPsych.data.get().json();
+
+    await addDoc(collection(db, "responses"), {
+      timestamp: new Date(),
+      data: data
+    });
+
+    alert("Thank you! Your responses were saved.");
   }
 });
+
 
 // 1. Intro screen (experiment-level)
 const welcome = {
