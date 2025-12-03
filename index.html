@@ -1,14 +1,15 @@
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>jsPsych Test</title>
+  <title>Mammal Feature Importance Survey</title>
 
   <!-- jsPsych CSS -->
   <link rel="stylesheet" href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css">
+
+  <!-- Firebase (compat builds, work with normal <script> tags) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
     body {
@@ -22,18 +23,17 @@
   <!-- jsPsych will render into this div -->
   <div id="jspsych-target"></div>
 
-    <!-- jsPsych core -->
-    <script src="https://unpkg.com/jspsych@7.3.3"></script>
+  <!-- jsPsych core -->
+  <script src="https://unpkg.com/jspsych@7.3.3"></script>
 
-    <!-- Plugins -->
-    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.2"></script>
-  
-    <!-- Your data (exported from Python) -->
-    <script src="mammals_data.js"></script>
-  
-    <!-- Your experiment code -->
-    <script src="experiment.js"></script>
-  </body>
-  </html>
-  
+  <!-- Plugins -->
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.2"></script>
+
+  <!-- Your data (exported from Python) -->
+  <script src="mammals_data.js"></script>
+
+  <!-- Your experiment code (includes Firebase saving logic) -->
+  <script src="experiment.js"></script>
+</body>
+</html>

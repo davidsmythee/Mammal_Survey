@@ -1,8 +1,7 @@
 // Survey: 5 animals × 10 features each
 // For each animal: 1 intro page + 1 page with 10 feature questions
 
-
-
+// ---------- Firebase init (compat style) ----------
 const firebaseConfig = {
   apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
   authDomain: "mammalsurvey-69cfa.firebaseapp.com",
@@ -12,25 +11,28 @@ const firebaseConfig = {
   appId: "1:918927677850:web:684a74b563f19baed80223"
 };
 
+// firebase and firebase.firestore come from the compat scripts in index.html
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-
-
+// ---------- jsPsych init ----------
 const jsPsych = initJsPsych({
   display_element: 'jspsych-target',
-  on_finish: async function() {
+  on_finish: function() {
     const data = jsPsych.data.get().json();
 
-    await addDoc(collection(db, "responses"), {
-      timestamp: new Date(),
+    // Save one document per participant into "responses" collection
+    db.collection("responses").add({
+      timestamp: new Date().toISOString(),
       data: data
+    }).then(() => {
+      alert("Thank you! Your responses were saved.");
+    }).catch((error) => {
+      console.error("Error saving data:", error);
+      alert("There was an error saving your responses. Please screenshot this and send it to the researcher.");
     });
-
-    alert("Thank you! Your responses were saved.");
   }
 });
-
 
 // 1. Intro screen (experiment-level)
 const welcome = {
