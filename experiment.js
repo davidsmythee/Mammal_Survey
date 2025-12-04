@@ -98,15 +98,15 @@ const demographics = {
 const welcome = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <h2>Feature Importance Survey</h2>
-    <p>You will rate how important different features are for describing different animals.</p>
-    <p>For each question, use the 1–5 scale where 1 = "Not important" and 5 = "Very important".</p>
+    <h1>Feature Importance Survey</h1>
+    <h3><b>Task:</b>You will rate how important different features are for describing 5 different animals.</h3>
+    <h4>For each question, use the 1–5 scale where 1 = "Not important" and 5 = "Very important".</h4>
     <p>
     Example: When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as <b>very important</b> features,
     while rating <b>“gray”</b> as <b>not very important</b>—even though dolphins are in fact gray—because color matters
     less than movement or habitat for defining what a dolphin is.
     </p>
-    <p>Click "Begin" to start.</p>
+    <h3>Click "Begin" to start.</h3>
   `,
   choices: ['Begin'],
   data: {
