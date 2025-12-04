@@ -71,7 +71,7 @@ const jsPsych = initJsPsych({
 // ---------- Demographics page (name only, char limits) ----------
 
 const demographics = {
-  type: 'survey-html-form',
+  type: jsPsychSurveyHtmlForm,
   preamble: `
     <h2>About You</h2>
     <p>Please enter your name before the survey begins.</p>
