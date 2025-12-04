@@ -22,14 +22,14 @@ const jsPsych = initJsPsych({
 
     const allData = jsPsych.data.get();
 
-    // ✅ Extract ONLY name fields
+    // Get demographics (name only)
     const demoTrial = allData.filter({ screen_type: 'demographics' }).values()[0];
     const demoResp = demoTrial ? demoTrial.response : {};
 
     const firstName = demoResp.first_name || "";
     const lastName  = demoResp.last_name || "";
 
-    // ✅ Extract all feature responses
+    // Extract feature-block trials
     const featureTrials = allData.filter({ screen_type: 'feature_block' }).values();
     const simplifiedResponses = [];
 
@@ -41,7 +41,7 @@ const jsPsych = initJsPsych({
       featureIndices.forEach(featureIdx => {
         const key = `feature_${featureIdx}`;
         if (respObj.hasOwnProperty(key)) {
-          const score = respObj[key] + 1;
+          const score = respObj[key] + 1;  // 0–4 → 1–5
 
           simplifiedResponses.push({
             animal: animal,
@@ -53,7 +53,7 @@ const jsPsych = initJsPsych({
       });
     });
 
-    // ✅ Save simplified document
+    // Save ONE document per participant to Firestore
     db.collection("responses").add({
       timestamp: new Date().toISOString(),
       first_name: firstName,
@@ -68,7 +68,7 @@ const jsPsych = initJsPsych({
   }
 });
 
-// ---------- Demographics page (NAME ONLY + CHAR LIMITS) ----------
+// ---------- Demographics page (name only, char limits) ----------
 
 const demographics = {
   type: jsPsychSurveyHtmlForm,
