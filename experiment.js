@@ -101,6 +101,11 @@ const welcome = {
     <h2>Feature Importance Survey</h2>
     <p>You will rate how important different features are for describing different animals.</p>
     <p>For each question, use the 1–5 scale where 1 = "Not important" and 5 = "Very important".</p>
+    <p>
+    Example: When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as <b>very important</b> features,
+    while rating <b>“gray”</b> as <b>not very important</b>—even though dolphins are in fact gray—because color matters
+    less than movement or habitat for defining what a dolphin is.
+    </p>
     <p>Click "Begin" to start.</p>
   `,
   choices: ['Begin'],
