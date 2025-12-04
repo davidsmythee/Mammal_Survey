@@ -1,5 +1,4 @@
 // ---------- Firebase init (compat style) ----------
-// If you already initialize Firebase elsewhere, keep ONE copy of this config.
 
 const firebaseConfig = {
   apiKey: "AIzaSyAsIeHc3hWx3_qS2bWXvOiJaKR6rmPM9Hw",
@@ -10,7 +9,6 @@ const firebaseConfig = {
   appId: "1:918927677850:web:684a74b563f19baed80223"
 };
 
-// `firebase` comes from the compat scripts in index.html
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -21,35 +19,29 @@ const db = firebase.firestore();
 const jsPsych = initJsPsych({
   display_element: 'jspsych-target',
   on_finish: function() {
-    // 1. Get all jsPsych data as an object (not a big JSON string)
+
     const allData = jsPsych.data.get();
 
-    // 2. Extract demographics
+    // ✅ Extract ONLY name fields
     const demoTrial = allData.filter({ screen_type: 'demographics' }).values()[0];
     const demoResp = demoTrial ? demoTrial.response : {};
 
     const firstName = demoResp.first_name || "";
     const lastName  = demoResp.last_name || "";
-    const age       = demoResp.age || "";
-    const gender    = demoResp.gender || "";
 
-    // 3. Extract feature-block trials (each is one animal with 10 features)
+    // ✅ Extract all feature responses
     const featureTrials = allData.filter({ screen_type: 'feature_block' }).values();
-
-    // We will build an array of { animal, feature_index, feature_name, score }
     const simplifiedResponses = [];
 
     featureTrials.forEach(trial => {
       const animal = trial.animal;
-      const featureIndices = trial.feature_indices;  // [38, 79, ...]
-      const respObj = trial.response;                // { feature_38: 2, ... } (0–4)
-      // question_order is there too, but we don't need it since we know feature_indices
+      const featureIndices = trial.feature_indices;
+      const respObj = trial.response;
 
       featureIndices.forEach(featureIdx => {
         const key = `feature_${featureIdx}`;
         if (respObj.hasOwnProperty(key)) {
-          const rawScore = respObj[key]; // 0–4 from jsPsych
-          const score = rawScore + 1;    // convert to 1–5
+          const score = respObj[key] + 1;
 
           simplifiedResponses.push({
             animal: animal,
@@ -61,43 +53,50 @@ const jsPsych = initJsPsych({
       });
     });
 
-    // 4. Save ONE document per participant to Firestore
+    // ✅ Save simplified document
     db.collection("responses").add({
       timestamp: new Date().toISOString(),
       first_name: firstName,
       last_name: lastName,
-      age: age,
-      gender: gender,
       responses: simplifiedResponses
     }).then(() => {
       alert("Thank you! Your responses were saved.");
     }).catch((error) => {
       console.error("Error saving data:", error);
-      alert("There was an error saving your responses. Please screenshot this and send it to the researcher.");
+      alert("There was an error saving your responses.");
     });
   }
 });
 
-// ---------- Demographics page ----------
+// ---------- Demographics page (NAME ONLY + CHAR LIMITS) ----------
 
 const demographics = {
-  type: jsPsychSurveyText,
+  type: jsPsychSurveyHtmlForm,
   preamble: `
     <h2>About You</h2>
-    <p>Please answer a few questions before the survey begins.</p>
+    <p>Please enter your name before the survey begins.</p>
   `,
-  questions: [
-    { prompt: "First name:", name: "first_name", required: true },
-    { prompt: "Last name:", name: "last_name", required: true },
-    { prompt: "Age:", name: "age", required: true },
-    { prompt: "Gender (optional):", name: "gender", required: false }
-  ],
+  html: `
+    <p>
+      <label>
+        First name:
+        <input name="first_name" type="text" maxlength="30" required>
+      </label>
+    </p>
+
+    <p>
+      <label>
+        Last name:
+        <input name="last_name" type="text" maxlength="30" required>
+      </label>
+    </p>
+  `,
   data: {
     screen_type: "demographics"
   }
 };
 
-// ---------- Intro screen (experiment-level) ----------
+// ---------- Intro screen ----------
 
 const welcome = {
   type: jsPsychHtmlButtonResponse,
@@ -115,44 +114,31 @@ const welcome = {
 
 // ---------- Build the 5 animals × 10 features design ----------
 
-// Choose animals that have at least 10 features present
 let candidateAnimals = [];
 for (let i = 0; i < animalNames.length; i++) {
-  const row = animalFeatures[i];  // booleans for this animal
+  const row = animalFeatures[i];
   const countTrue = row.filter(v => v).length;
-  if (countTrue >= 10) {
-    candidateAnimals.push(i);
-  }
+  if (countTrue >= 10) candidateAnimals.push(i);
 }
 
-console.log("Number of candidate animals with ≥10 features:", candidateAnimals.length);
-
-// Sample 5 animals from candidates (per participant)
 let sampledAnimals = jsPsych.randomization.sampleWithoutReplacement(candidateAnimals, 5);
-console.log("Sampled animal indices:", sampledAnimals);
 
-// Build timeline
+// ---------- Timeline ----------
+
 let timeline = [];
-
-// 1) Demographics first
 timeline.push(demographics);
-
-// 2) Then welcome / instructions
 timeline.push(welcome);
 
-// 3) Then 5 × (intro + feature page)
 sampledAnimals.forEach(animalIdx => {
+
   const animalName = animalNames[animalIdx];
   const row = animalFeatures[animalIdx];
 
-  // --- 3a) Intro page for this animal ---
   const animalIntro = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <h2>${animalName}</h2>
-      <p>Next, you will answer 10 questions about how important different features are
-      for describing a <b>${animalName}</b>.</p>
-      <p>All 10 questions will appear on the same page.</p>
+      <p>You will now answer 10 questions about this animal.</p>
     `,
     choices: ['Continue'],
     data: {
@@ -164,12 +150,9 @@ sampledAnimals.forEach(animalIdx => {
 
   timeline.push(animalIntro);
 
-  // --- 3b) Select 10 present features for this animal ---
   let presentFeatureIndices = [];
   for (let j = 0; j < featureNames.length; j++) {
-    if (row[j]) {
-      presentFeatureIndices.push(j);
-    }
+    if (row[j]) presentFeatureIndices.push(j);
   }
 
   const sampledFeatureIndices = jsPsych.randomization.sampleWithoutReplacement(
@@ -177,14 +160,9 @@ sampledAnimals.forEach(animalIdx => {
     10
   );
 
-  // Build the 10 questions for this animal (all on one page)
   const questions = sampledFeatureIndices.map((featureIdx, qIdx) => {
-    const featureName = featureNames[featureIdx];
 
-    // Default numeric labels
     let labels = ['1', '2', '3', '4', '5'];
-
-    // For the FIRST slider on the page, add "Not important" / "Very important" text
     if (qIdx === 0) {
       labels = [
         '1<br><span style="font-size: 12px;">Not important</span>',
@@ -196,31 +174,30 @@ sampledAnimals.forEach(animalIdx => {
     }
 
     return {
-      prompt: `How important is <b>${featureName}</b> for being a <b>${animalName}</b>?`,
+      prompt: `How important is <b>${featureNames[featureIdx]}</b> for being a <b>${animalName}</b>?`,
       labels: labels,
       required: true,
-      // Name encodes the feature index, so you can decode later
       name: `feature_${featureIdx}`
     };
   });
 
   const featurePage = {
     type: jsPsychSurveyLikert,
-    preamble: `<p>Animal: <b>${animalName}</b></p>
-               <p>Please answer all 10 questions about this animal before continuing.</p>`,
+    preamble: `<p><b>${animalName}</b></p>`,
     questions: questions,
     data: {
       screen_type: 'feature_block',
       animal: animalName,
       animal_index: animalIdx,
-      feature_indices: sampledFeatureIndices  // we can unpack this later
+      feature_indices: sampledFeatureIndices
     }
   };
 
   timeline.push(featurePage);
 });
 
-// Outro screen
+// ---------- Outro ----------
+
 const goodbye = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
@@ -228,12 +205,8 @@ const goodbye = {
     <p>Your responses have been recorded.</p>
   `,
   choices: ['Finish'],
-  data: {
-    screen_type: 'goodbye'
-  }
+  data: { screen_type: 'goodbye' }
 };
 
 timeline.push(goodbye);
-
-// Run experiment
 jsPsych.run(timeline);
