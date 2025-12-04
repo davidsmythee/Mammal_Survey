@@ -66,8 +66,6 @@ const jsPsych = initJsPsych({
       timestamp: new Date().toISOString(),
       first_name: firstName,
       last_name: lastName,
-      age: age,
-      gender: gender,
       responses: simplifiedResponses
     }).then(() => {
       alert("Thank you! Your responses were saved.");
@@ -88,9 +86,7 @@ const demographics = {
   `,
   questions: [
     { prompt: "First name:", name: "first_name", required: true },
-    { prompt: "Last name:", name: "last_name", required: true },
-    { prompt: "Age:", name: "age", required: true },
-    { prompt: "Gender (optional):", name: "gender", required: false }
+    { prompt: "Last name:", name: "last_name", required: true }
   ],
   data: {
     screen_type: "demographics"
