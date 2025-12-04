@@ -98,15 +98,38 @@ const demographics = {
 const welcome = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-    <h1>Feature Importance Survey</h1>
-    <h3><b>Task:</b>You will rate how important different features are for describing 5 different animals.</h3>
-    <h4>For each question, use the 1–5 scale where 1 = "Not important" and 5 = "Very important".</h4>
-    <p>
-    Example: When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as <b>very important</b> features,
-    while rating <b>“gray”</b> as <b>not very important</b>—even though dolphins are in fact gray—because color matters
-    less than movement or habitat for defining what a dolphin is.
+    
+    <div style="max-width: 700px; margin: 0 auto; text-align: left;">
+
+    <h1 style="text-align: center; margin-bottom: 24px;">
+      Feature Importance Survey
+    </h1>
+
+    <p style="font-size: 18px; margin-bottom: 12px;">
+      <strong>Task.</strong>
+      You will rate how important different features are for describing 5 different animals.
     </p>
-    <h3>Click "Begin" to start.</h3>
+
+    <p style="font-size: 16px; margin-bottom: 18px;">
+      <strong>How to answer.</strong>
+      For each question, use the 1–5 scale where
+      <strong>1 = "Not important"</strong> and
+      <strong>5 = "Very important"</strong>.
+    </p>
+
+    <p style="font-size: 15px; margin-bottom: 24px;">
+      <strong>Example.</strong>
+      When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as
+      <b>very important</b> features, while rating <b>“gray”</b> as <b>not very important</b>—even
+      though dolphins are in fact gray—because color matters less in your opinion than movement or habitat for
+      defining what a dolphin is. There are no wrong answers. 
+    </p>
+
+    <p style="font-size: 18px; text-align: center;">
+      <strong>Click "Begin" to start.</strong>
+    </p>
+
+  </div>
   `,
   choices: ['Begin'],
   data: {
