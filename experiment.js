@@ -99,37 +99,55 @@ const welcome = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     
-    <div style="max-width: 700px; margin: 0 auto; text-align: left;">
+    <div style="
+      max-width: 720px; 
+      margin: 0 auto; 
+      text-align: left; 
+      font-family: Arial, sans-serif; 
+      line-height: 1.6; 
+      padding: 24px 28px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+      background-color: #fafafa;
+    ">
 
-    <h1 style="text-align: center; margin-bottom: 24px;">
-      Feature Importance Survey
-    </h1>
+      <h1 style="text-align: center; margin-bottom: 24px;">
+        Feature Importance Survey
+      </h1>
 
-    <p style="font-size: 18px; margin-bottom: 12px;">
-      <strong>Task.</strong>
-      You will rate how important different features are for describing 5 different animals.
-    </p>
+      <p style="font-size: 18px; margin-bottom: 12px;">
+        <strong>Task.</strong>
+        You will rate how important different features are for describing 5 different animals.
+      </p>
 
-    <p style="font-size: 16px; margin-bottom: 18px;">
-      <strong>How to answer.</strong>
-      For each question, use the 1–5 scale where
-      <strong>1 = "Not important"</strong> and
-      <strong>5 = "Very important"</strong>.
-    </p>
+      <p style="font-size: 16px; margin-bottom: 16px;">
+        <strong>How to answer.</strong>
+        For each question, use the 1–5 scale where
+        <strong>1 = "Not important"</strong> and
+        <strong>5 = "Very important"</strong>.
+      </p>
 
-    <p style="font-size: 15px; margin-bottom: 24px;">
-      <strong>Example.</strong>
-      When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as
-      <b>very important</b> features, while rating <b>“gray”</b> as <b>not very important</b>—even
-      though dolphins are in fact gray—because color matters less in your opinion than movement or habitat for
-      defining what a dolphin is. There are no wrong answers. 
-    </p>
+      <p style="font-size: 16px; margin-bottom: 18px;">
+        <strong>What is a "feature"?</strong>
+        The <strong>feature</strong> can be a noun (e.g., <em>tail</em>), a verb (e.g., <em>runs</em>), 
+        or an adjective (e.g., <em>smelly</em>). If you do not understand the meaning of a word,
+        just use your best guess (or look it up online).
+      </p>
 
-    <p style="font-size: 18px; text-align: center;">
-      <strong>Click "Begin" to start.</strong>
-    </p>
+      <p style="font-size: 15px; margin-bottom: 24px;">
+        <strong>Example.</strong>
+        When rating a <b>dolphin</b>, you might judge <b>“swims”</b> and <b>“ocean”</b> as
+        <b>very important</b> features, while rating <b>“gray”</b> as <b>not very important</b>—even
+        though dolphins are in fact gray—because color matters less in your opinion than movement or habitat for
+        defining what a dolphin is. There are no wrong answers.
+      </p>
 
-  </div>
+      <p style="font-size: 18px; text-align: center; margin-top: 8px;">
+        <strong>Click "Begin" to start.</strong>
+      </p>
+
+    </div>
+
   `,
   choices: ['Begin'],
   data: {
