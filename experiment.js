@@ -267,7 +267,7 @@ const goodbye = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <h2>Thank you!</h2>
-    <p>Your responses have been recorded.</p>
+    <h3>PLEASE CLICK FINISH TO COMPLETE THE SURVEY</h3>
   `,
   choices: ['Finish'],
   data: {
