@@ -1,0 +1,85 @@
+🔍 Checking survey completion status...
+
+📋 Roster has 51 people
+
+📊 Database has 47 response(s)
+
+══════════════════════════════════════════════════
+✅ COMPLETED (33/51)
+══════════════════════════════════════════════════
+  • Colin Burns (12/10/2025)
+  • Mark Marino (12/10/2025)
+  • Nate Kabiri (12/10/2025)
+  • Jackson Green (12/10/2025)
+  • Brody Upton (12/10/2025)
+  • Chad Palumbo (12/10/2025)
+  • Peter Buonanno (12/10/2025)
+  • Owen Fischer (12/11/2025)
+  • Hunter Spiess (12/10/2025)
+  • Jamison Moore (12/10/2025)
+  • Evan Calkins (12/10/2025)
+  • Quinn Krammer (12/10/2025)
+  • Carson Krammer (12/10/2025)
+  • Colin Vickrey (12/10/2025)
+  • Caden Southworth (12/10/2025)
+  • Ryan Croddick (12/10/2025)
+  • Jack Stahl (12/10/2025)
+  • Connor Crosby (12/10/2025)
+  • Caden Frank (12/10/2025)
+  • Andrew McMeekin (12/10/2025)
+  • Matthew Kephart (12/11/2025)
+  • Jake Vana (12/10/2025)
+  • Thatcher Bernstein (12/10/2025)
+  • Cooper Revis (12/10/2025)
+  • Wilder Burgin (12/10/2025)
+  • Jim Williams (12/10/2025)
+  • John Dunphey (12/10/2025)
+  • Tyler Harris (12/11/2025)
+  • Tyler McDermott (12/10/2025)
+  • David Smythe (12/10/2025)
+  • Jackson Kane (12/10/2025)
+  • Cooper Mueller (12/10/2025)
+  • Cooper Kistler (12/10/2025)
+
+══════════════════════════════════════════════════
+❌ NOT COMPLETED (18/51)
+══════════════════════════════════════════════════
+  • Cody Lam
+  • Ian Mize
+  • Zach Friedman
+  • Parker Reynolds
+  • Jacob Todd
+  • Nick Crowley
+  • Finn Fox
+  • Tucker Wade
+  • Isaac Cruz
+  • Carter Johnson
+  • Will Fuller
+  • Porter Malkiel
+  • Tucker Spiess
+  • Beau Hokanson
+  • Kevin Morrow
+  • Matt Giannetti
+  • Aidan McDonald
+  • Russ Fitzgerald
+
+══════════════════════════════════════════════════
+⚠️  RESPONDED BUT NOT ON ROSTER (13)
+══════════════════════════════════════════════════
+  • Russell Fitzgerald (2025-12-11T20:53:00.873Z)
+  • Sarah Smythe (2025-12-04T16:11:09.482Z)
+  • Kyle Mele (2025-12-11T17:30:45.336Z)
+  • Matthew Giannetti (2025-12-10T21:35:17.611Z)
+  • Stefan Gjaja (2025-12-11T21:20:06.710Z)
+  • Benny Wertheimer (2025-12-11T21:23:40.429Z)
+  • Reed Ramirez (2025-12-11T19:07:16.486Z)
+  • Chris Smythe (2025-12-04T17:54:10.952Z)
+  • Colin Dowd (2025-12-11T18:17:46.088Z)
+  • Emeri Tompkins (2025-12-10T21:08:19.145Z)
+  • Abby Schuster (2025-12-10T22:05:08.380Z)
+  • William Smythe (2025-12-11T17:39:15.672Z)
+  • Ian Fitzgerald (2025-12-11T17:49:38.665Z)
+
+──────────────────────────────────────────────────
+📈 Completion rate: 33/51 (64.7%)
+──────────────────────────────────────────────────
