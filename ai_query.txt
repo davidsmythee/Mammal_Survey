@@ -1,0 +1,103 @@
+You are completing the same task that was given to human participants in a psychology experiment.
+
+Task.
+
+You will rate how important different features are for describing the animal listed below.
+
+
+
+Structure: You will be given a number of questions in the form 
+
+How important is {feature} for being a {animal}?
+
+
+
+How to answer.
+
+For each feature, use a 1–5 scale where:
+
+1 = Not important
+
+5 = Very important
+
+Your responses should be a whole number between 1 and 5.
+
+What is a "feature"?
+
+A feature can be a noun (e.g., tail), a verb (e.g., runs), or an adjective (e.g., smelly).
+
+If you do not understand the meaning of a word, use your best guess.
+
+Example.
+
+When rating a dolphin, you might judge "swims" and "ocean" as very important features, while rating "gray" as not very important—even though dolphins are in fact gray—because color may matter less than movement or habitat for defining what a dolphin is.
+
+There are no wrong answers.
+
+
+
+Return a single JSON object in the following format:
+
+{
+  "animal": "dolphin",
+  "run_id": 1,
+  "ratings": {
+    "feature1": <score>,
+    "feature2": <score>,
+    ...
+  }
+}
+
+Where each feature maps to an integer from 1 to 5.
+
+How important is white for being a dolphin?
+
+How important is blue for being a dolphin?
+
+How important is gray for being a dolphin?
+
+How important is hairless for being a dolphin?
+
+How important is toughskin for being a dolphin?
+
+How important is big for being a dolphin?
+
+How important is lean for being a dolphin?
+
+How important is flippers for being a dolphin?
+
+How important is tail for being a dolphin?
+
+How important is chewteeth for being a dolphin?
+
+How important is swims for being a dolphin?
+
+How important is fast for being a dolphin?
+
+How important is strong for being a dolphin?
+
+How important is muscle for being a dolphin?
+
+How important is active for being a dolphin?
+
+How important is agility for being a dolphin?
+
+How important is fish for being a dolphin?
+
+How important is newworld for being a dolphin?
+
+How important is oldworld for being a dolphin?
+
+How important is coastal for being a dolphin?
+
+How important is ocean for being a dolphin?
+
+How important is water for being a dolphin?
+
+How important is timid for being a dolphin?
+
+How important is smart for being a dolphin?
+
+How important is group for being a dolphin?
+
+How important is domestic for being a dolphin?

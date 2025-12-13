@@ -3,6 +3,11 @@
  * find_similar.js
  * 
  * Find the top 10 most similar animals to a given animal.
+ * Compares 4 similarity matrices side by side:
+ *   - Human-weighted
+ *   - AI-weighted
+ *   - Unweighted
+ *   - Feature Ratio (shared/differed)
  * 
  * Usage: node find_similar.js <animal_name>
  * Example: node find_similar.js "grizzly bear"
@@ -11,16 +16,42 @@
 const fs = require('fs');
 const path = require('path');
 
-// Load the similarity matrix
-const matrixPath = path.join(__dirname, 'similarity_matrix.json');
+// Load all four similarity matrices
+const humanMatrixPath = path.join(__dirname, 'similarity_matrix.json');
+const aiMatrixPath = path.join(__dirname, 'ai_similarity_matrix.json');
+const unweightedMatrixPath = path.join(__dirname, 'unweighted_similarity_matrix.json');
+const featureRatioMatrixPath = path.join(__dirname, 'feature_ratio_similarity_matrix.json');
 
-if (!fs.existsSync(matrixPath)) {
+if (!fs.existsSync(humanMatrixPath)) {
   console.error('❌ similarity_matrix.json not found. Run similarity_matrix.js first.');
   process.exit(1);
 }
 
-const data = JSON.parse(fs.readFileSync(matrixPath, 'utf-8'));
-const { animals, similarity_matrix } = data;
+if (!fs.existsSync(aiMatrixPath)) {
+  console.error('❌ ai_similarity_matrix.json not found. Run ai_similarity_matrix.js first.');
+  process.exit(1);
+}
+
+if (!fs.existsSync(unweightedMatrixPath)) {
+  console.error('❌ unweighted_similarity_matrix.json not found. Run unweighted_similarity_matrix.js first.');
+  process.exit(1);
+}
+
+if (!fs.existsSync(featureRatioMatrixPath)) {
+  console.error('❌ feature_ratio_similarity_matrix.json not found. Run feature_ratio_similarity_matrix.js first.');
+  process.exit(1);
+}
+
+const humanData = JSON.parse(fs.readFileSync(humanMatrixPath, 'utf-8'));
+const aiData = JSON.parse(fs.readFileSync(aiMatrixPath, 'utf-8'));
+const unweightedData = JSON.parse(fs.readFileSync(unweightedMatrixPath, 'utf-8'));
+const featureRatioData = JSON.parse(fs.readFileSync(featureRatioMatrixPath, 'utf-8'));
+
+const animals = humanData.animals;
+const humanMatrix = humanData.similarity_matrix;
+const aiMatrix = aiData.similarity_matrix;
+const unweightedMatrix = unweightedData.similarity_matrix;
+const featureRatioMatrix = featureRatioData.similarity_matrix;
 
 // Get the animal name from command line
 const input = process.argv.slice(2).join(' ').toLowerCase().trim();
@@ -57,31 +88,105 @@ if (animalIndex === -1) {
 
 const animalName = animals[animalIndex];
 
-// Get similarities for this animal
-const similarities = similarity_matrix[animalIndex]
-  .map((sim, idx) => ({
-    animal: animals[idx],
-    similarity: sim,
-    index: idx
-  }))
-  .filter(s => s.index !== animalIndex) // Exclude self
-  .sort((a, b) => b.similarity - a.similarity);
+// Helper function to get sorted similarities
+function getSimilarities(matrix) {
+  return matrix[animalIndex]
+    .map((sim, idx) => ({
+      animal: animals[idx],
+      similarity: sim,
+      index: idx
+    }))
+    .filter(s => s.index !== animalIndex)
+    .sort((a, b) => b.similarity - a.similarity);
+}
 
-// Print results
+const humanSimilarities = getSimilarities(humanMatrix);
+const aiSimilarities = getSimilarities(aiMatrix);
+const unweightedSimilarities = getSimilarities(unweightedMatrix);
+const featureRatioSimilarities = getSimilarities(featureRatioMatrix);
+
+// Print results - two rows of two columns each for better readability
 console.log();
-console.log('═'.repeat(50));
+console.log('═'.repeat(100));
 console.log(`Top 10 animals most similar to: ${animalName.toUpperCase()}`);
-console.log('═'.repeat(50));
+console.log('═'.repeat(100));
+
+// First row: Human Weights and AI Weights
 console.log();
+console.log('        HUMAN WEIGHTS                                    AI WEIGHTS');
+console.log('     ──────────────────────────────────────         ──────────────────────────────────────');
 
-similarities.slice(0, 10).forEach((s, idx) => {
-  const bar = '█'.repeat(Math.round(s.similarity * 20));
-  const pct = (s.similarity * 100).toFixed(1);
-  console.log(`  ${String(idx + 1).padStart(2)}. ${s.animal.padEnd(18)} ${s.similarity.toFixed(4)}  ${bar} (${pct}%)`);
-});
+for (let i = 0; i < 10; i++) {
+  const h = humanSimilarities[i];
+  const a = aiSimilarities[i];
+  
+  const rank = String(i + 1).padStart(2);
+  
+  const hName = h.animal.padEnd(16);
+  const hScore = h.similarity.toFixed(3);
+  const hBar = '█'.repeat(Math.round(h.similarity * 10)).padEnd(10);
+  
+  const aName = a.animal.padEnd(16);
+  const aScore = a.similarity.toFixed(3);
+  const aBar = '█'.repeat(Math.round(a.similarity * 10)).padEnd(10);
+  
+  console.log(`  ${rank}. ${hName} ${hScore} ${hBar}      ${rank}. ${aName} ${aScore} ${aBar}`);
+}
+
+// Second row: Unweighted and Feature Ratio
+console.log();
+console.log('        UNWEIGHTED                                       FEATURE RATIO (shared/differed)');
+console.log('     ──────────────────────────────────────         ──────────────────────────────────────');
+
+for (let i = 0; i < 10; i++) {
+  const u = unweightedSimilarities[i];
+  const f = featureRatioSimilarities[i];
+  
+  const rank = String(i + 1).padStart(2);
+  
+  const uName = u.animal.padEnd(16);
+  const uScore = u.similarity.toFixed(3);
+  const uBar = '█'.repeat(Math.round(u.similarity * 10)).padEnd(10);
+  
+  const fName = f.animal.padEnd(16);
+  const fScore = f.similarity.toFixed(3);
+  const fBar = '█'.repeat(Math.round(f.similarity * 10)).padEnd(10);
+  
+  console.log(`  ${rank}. ${uName} ${uScore} ${uBar}      ${rank}. ${fName} ${fScore} ${fBar}`);
+}
 
 console.log();
-console.log('─'.repeat(50));
-console.log(`Least similar: ${similarities[similarities.length - 1].animal} (${similarities[similarities.length - 1].similarity.toFixed(4)})`);
-console.log('─'.repeat(50));
+console.log('─'.repeat(100));
 
+// Show agreement/disagreement
+const humanTop10 = new Set(humanSimilarities.slice(0, 10).map(s => s.animal));
+const aiTop10 = new Set(aiSimilarities.slice(0, 10).map(s => s.animal));
+const unweightedTop10 = new Set(unweightedSimilarities.slice(0, 10).map(s => s.animal));
+const featureRatioTop10 = new Set(featureRatioSimilarities.slice(0, 10).map(s => s.animal));
+
+// Find animals in all four
+const inAll4 = [...humanTop10].filter(a => aiTop10.has(a) && unweightedTop10.has(a) && featureRatioTop10.has(a));
+
+// Find pairwise overlaps
+const humanAiOverlap = [...humanTop10].filter(a => aiTop10.has(a));
+const humanUnweightedOverlap = [...humanTop10].filter(a => unweightedTop10.has(a));
+const humanFeatureRatioOverlap = [...humanTop10].filter(a => featureRatioTop10.has(a));
+
+console.log(`Agreement across all 4 methods: ${inAll4.length}/10`);
+console.log(`  Human ∩ AI: ${humanAiOverlap.length}/10  |  Human ∩ Unweighted: ${humanUnweightedOverlap.length}/10  |  Human ∩ FeatureRatio: ${humanFeatureRatioOverlap.length}/10`);
+
+// Show unique to each method
+const humanOnly = [...humanTop10].filter(a => !aiTop10.has(a) && !unweightedTop10.has(a) && !featureRatioTop10.has(a));
+const aiOnly = [...aiTop10].filter(a => !humanTop10.has(a) && !unweightedTop10.has(a) && !featureRatioTop10.has(a));
+const unweightedOnly = [...unweightedTop10].filter(a => !humanTop10.has(a) && !aiTop10.has(a) && !featureRatioTop10.has(a));
+const featureRatioOnly = [...featureRatioTop10].filter(a => !humanTop10.has(a) && !aiTop10.has(a) && !unweightedTop10.has(a));
+
+if (humanOnly.length > 0 || aiOnly.length > 0 || unweightedOnly.length > 0 || featureRatioOnly.length > 0) {
+  console.log();
+  if (humanOnly.length > 0) console.log(`  Unique to Human: ${humanOnly.join(', ')}`);
+  if (aiOnly.length > 0) console.log(`  Unique to AI: ${aiOnly.join(', ')}`);
+  if (unweightedOnly.length > 0) console.log(`  Unique to Unweighted: ${unweightedOnly.join(', ')}`);
+  if (featureRatioOnly.length > 0) console.log(`  Unique to FeatureRatio: ${featureRatioOnly.join(', ')}`);
+}
+
+console.log('─'.repeat(100));
